@@ -279,7 +279,7 @@ package cheshire_pkg;
   localparam doub_bt AmLlc    = 'h0300_1000;
   localparam doub_bt AmSlink  = 'h0300_6000;
   localparam doub_bt AmBusErr = 'h0300_9000;
-  localparam doub_bt AmSpm    = 'h1000_0000;  // Cached region at bottom, uncached on top
+  localparam doub_bt AmSpm    = 'h1000_0000;
   localparam doub_bt AmClic   = 'h0800_0000;
 
   // Static masks
@@ -492,7 +492,7 @@ package cheshire_pkg;
       AxiIdWidth            : Cva6IdWidth,
       AxiUserWidth          : cfg.AxiUserWidth,
       NrLoadBufEntries      : 2,
-      FpuEn                 : 1,
+      FpuEn                 : 0,
       XF16                  : 0,
       XF16ALT               : 0,
       XF8                   : 0,
@@ -501,15 +501,15 @@ package cheshire_pkg;
       RVB                   : 0,
       RVV                   : 0,
       RVC                   : 1,
-      RVH                   : 1,
+      RVH                   : 0,
       RVZCB                 : 1,
       XFVec                 : 0,
       CvxifEn               : 0,
       ZiCondExtEn           : 1,
       RVSCLIC               : cfg.Clic,
-      RVF                   : 1,
-      RVD                   : 1,
-      FpPresent             : 1,
+      RVF                   : 0,
+      RVD                   : 0,
+      FpPresent             : 0,
       NSX                   : 0,
       FLen                  : 64,
       RVFVec                : 0,
@@ -519,7 +519,7 @@ package cheshire_pkg;
       NrRgprPorts           : 0,
       NrWbPorts             : 0,
       EnableAccelerator     : 0,
-      RVS                   : 1,
+      RVS                   : 0,
       RVU                   : 1,
       HaltAddress           : 'h800, // Relative to AmDbg
       ExceptionAddress      : 'h810, // Relative to AmDbg
@@ -537,9 +537,9 @@ package cheshire_pkg;
       NrNonIdempotentRules  : 2,   // Periphs, ExtNonCIE
       NonIdempotentAddrBase : {64'h0000_0000, NoCieBase},
       NonIdempotentLength   : {64'h1000_0000, 64'h6000_0000 - cfg.Cva6ExtCieLength},
-      NrExecuteRegionRules  : 5,   // Debug, Bootrom, AllSPM, LLCOut, ExtCIE
-      ExecuteRegionAddrBase : {AmDbg, AmBrom, AmSpm, cfg.LlcOutRegionStart, CieBase},
-      ExecuteRegionLength   : {64'h40000, 64'h40000, 2*SizeSpm, SizeLlcOut, cfg.Cva6ExtCieLength},
+      NrExecuteRegionRules  : 6,   // Debug, Bootrom, Cached SPM, Uncached SPM, LLCOut, ExtCIE
+      ExecuteRegionAddrBase : {AmDbg, AmBrom, AmSpm, AmSpm + 'h0400_0000, cfg.LlcOutRegionStart, CieBase},
+      ExecuteRegionLength   : {64'h40000, 64'h40000, SizeSpm, SizeSpm, SizeLlcOut, cfg.Cva6ExtCieLength},
       NrCachedRegionRules   : 3,   // CachedSPM, LLCOut, ExtCIE
       CachedRegionAddrBase  : {AmSpm,   cfg.LlcOutRegionStart,  CieBase},
       CachedRegionLength    : {SizeSpm, SizeLlcOut,             cfg.Cva6ExtCieLength},
@@ -564,11 +564,11 @@ package cheshire_pkg;
     Cva6RASDepth      : 2,
     Cva6BTBEntries    : 32,
     Cva6BHTEntries    : 128,
-    Cva6NrPMPEntries  : 0,
+    Cva6NrPMPEntries  : 16,
     Cva6ExtCieLength  : 'h2000_0000,  // [0x2.., 0x4..) is CIE, [0x4.., 0x8..) is non-CIE
     Cva6ExtCieOnTop   : 0,
     // Harts
-    NumCores          : 1,
+    NumCores          : 2,
     CoreMaxTxns       : 8,
     CoreMaxTxnsPerId  : 4,
     CoreUserAmoOffs   : 0, // Convention: lower AMO bits for cores, MSB for serial link
@@ -597,16 +597,16 @@ package cheshire_pkg;
     RegAmoPostCut     : 1,
     RegAdaptMemCut    : 1,
     // RTC
-    RtcFreq           : 32768,
+    RtcFreq           : 1000000,
     // Features
     Bootrom           : 1,
     Uart              : 1,
-    I2c               : 1,
+    I2c               : 0,
     SpiHost           : 1,
     Gpio              : 1,
-    Dma               : 1,
-    SerialLink        : 1,
-    Vga               : 1,
+    Dma               : 0,
+    SerialLink        : 0,
+    Vga               : 0,
     Usb               : 1,
     AxiRt             : 0,
     Clic              : 0,
@@ -622,7 +622,7 @@ package cheshire_pkg;
     // LLC: 128 KiB, up to 2 GiB DRAM
     LlcNotBypass      : 1,
     LlcSetAssoc       : 8,
-    LlcNumLines       : 256,
+    LlcNumLines       : 512,
     LlcNumBlocks      : 8,
     LlcMaxReadTxns    : 16,
     LlcMaxWriteTxns   : 16,

@@ -101,9 +101,14 @@ module cheshire_top_xilinx import cheshire_pkg::*; (
 
   // Use default config as far as possible
   function automatic cheshire_cfg_t gen_cheshire_xilinx_cfg();
-    cheshire_cfg_t ret  = DefaultCfg;
-    ret.RtcFreq         = 1000000;
-    ret.SerialLink      = 0;
+    cheshire_cfg_t ret   = DefaultCfg;
+    ret.RtcFreq          = 1000000;
+    ret.SerialLink       = 0;
+    ret.NumCores         = 2;  // 2 cores
+    ret.Cva6NrPMPEntries = 16; // 16 PMP entries
+    ret.Dma              = 0;
+    ret.Vga              = 0;
+    ret.I2c              = 0;
   `ifdef USE_USB
     ret.Usb = 1;
   `else
